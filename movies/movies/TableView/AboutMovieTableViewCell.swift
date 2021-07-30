@@ -4,17 +4,20 @@
 import UIKit
 /// Контроллер
 final class AboutMovieTableViewCell: UITableViewCell {
+    // MARK: - Visual Components
+
+    var posterMovieImageView = UIImageView()
+    var aboutMoviesLabel = UILabel()
+    var titleMoviesLabel = UILabel()
+    var releaseDateLabel = UILabel()
+    var voteLabel = UILabel()
+
     // MARK: - Public Properties
 
     static let identifier = "CellMovie"
 
     // MARK: - Private Properties
 
-    private let posterMovieImageView = UIImageView()
-    private let aboutMoviesLabel = UILabel()
-    private let titleMoviesLabel = UILabel()
-    private let releaseDateLabel = UILabel()
-    private let voteLabel = UILabel()
     private let idMovie = Int()
 
     // MARK: - LyfeCycle
@@ -34,30 +37,9 @@ final class AboutMovieTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Public Properties
+    // MARK: - Private Methods
 
-    func fetchDataMovie(aboutMovie: Result) {
-        guard let addresOverview = aboutMovie.overview else { return }
-        aboutMoviesLabel.text = addresOverview
-        guard let release = aboutMovie.releaseDate else { return }
-        releaseDateLabel.text = "Даты выхода: \(release)"
-        guard let mark = aboutMovie.voteAverage else { return }
-        voteLabel.text = "Оценка \(mark)"
-        titleMoviesLabel.text = aboutMovie.title
-        guard let addresImage = aboutMovie.posterPath else { return }
-        guard let url = URL(string: "https://image.tmdb.org/t/p/w500" + addresImage) else { return }
-        URLSession.shared.dataTask(with: url) { data, _, _ in
-            if let data = data, let image = UIImage(data: data) {
-                DispatchQueue.main.async {
-                    self.posterMovieImageView.image = image
-                }
-            }
-        }.resume()
-    }
-
-    // MARK: - Private Properties
-
-    func createView() {
+    private func createView() {
         createOverviewMovie()
         createPosterImage()
         createReleaseLabel()
@@ -66,7 +48,7 @@ final class AboutMovieTableViewCell: UITableViewCell {
         createConstraintPoster()
     }
 
-    func createConstraintPoster() {
+    private func createConstraintPoster() {
         NSLayoutConstraint.activate([
             titleMoviesLabel.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 0),
             titleMoviesLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 10),

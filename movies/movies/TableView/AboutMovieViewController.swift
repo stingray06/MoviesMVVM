@@ -4,13 +4,18 @@
 import UIKit
 /// Ячейка TableView
 final class AboutMovieViewController: UIViewController {
+    
+    //MARK: - Visual Components
+    
+    var movieTable = UITableView()
+    
     // MARK: - Public Properties
 
     var idMovie = Int()
 
     // MARK: - Private Properties
 
-    private var movieTable = UITableView()
+    
     private var aboutMovie: Result?
     private let suffixURL = String()
 
@@ -19,7 +24,6 @@ final class AboutMovieViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         createMovieTable()
-        fetchDataAboutMovie()
         systemUnits()
     }
 
@@ -41,7 +45,7 @@ final class AboutMovieViewController: UIViewController {
         movieTable.dataSource = self
     }
 
-    private func fetchDataAboutMovie() {
+    func fetchDataAboutMovie(cell: AboutMovieTableViewCell, indexPath: IndexPath) {
         guard let url =
             URL(
                 string: "https://api.themoviedb.org/3/movie/" + "\(idMovie)" +
@@ -57,10 +61,26 @@ final class AboutMovieViewController: UIViewController {
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
                 self.aboutMovie = try decoder.decode(Result.self, from: data)
                 DispatchQueue.main.async {
+                    cell.aboutMoviesLabel.text = self.aboutMovie?.overview
+                    guard let release = self.aboutMovie?.releaseDate else { return }
+                    cell.releaseDateLabel.text = "Даты выхода: \(release))"
+                    guard let mark = self.aboutMovie?.voteAverage else { return }
+                    cell.voteLabel.text = "Оценка \(mark)"
+                    cell.titleMoviesLabel.text = self.aboutMovie?.title
                     self.movieTable.reloadData()
                 }
             } catch {
                 print(error)
+            }
+        }.resume()
+        guard let addresImage = aboutMovie?.posterPath else { return }
+        guard let url = URL(string: "https://image.tmdb.org/t/p/w500" + addresImage) else { return }
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    cell.posterMovieImageView.image = image
+                    self.movieTable.reloadData()
+                }
             }
         }.resume()
     }
@@ -77,8 +97,7 @@ extension AboutMovieViewController: UITableViewDelegate, UITableViewDataSource {
             for: indexPath
         ) as?
             AboutMovieTableViewCell else { return UITableViewCell() }
-        guard let movie = aboutMovie else { return UITableViewCell() }
-        cellTable.fetchDataMovie(aboutMovie: movie)
+        fetchDataAboutMovie(cell: cellTable, indexPath: indexPath)
         return cellTable
     }
 
