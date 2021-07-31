@@ -2,7 +2,6 @@
 // Copyright © RoadMap. All rights reserved.
 
 import Foundation
-import UIKit
 /// Модель данных
 
 // MARK: - Welcome

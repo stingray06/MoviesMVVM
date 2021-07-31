@@ -22,10 +22,6 @@ final class AboutMovieTableViewCell: UITableViewCell {
 
     // MARK: - LyfeCycle
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .systemGray6
@@ -82,8 +78,9 @@ final class AboutMovieTableViewCell: UITableViewCell {
     }
 
     private func createPosterImage() {
-        posterMovieImageView.contentMode = .scaleAspectFit
+        posterMovieImageView.contentMode = .scaleToFill
         posterMovieImageView.clipsToBounds = true
+        posterMovieImageView.backgroundColor = .gray
         addSubview(posterMovieImageView)
         posterMovieImageView.translatesAutoresizingMaskIntoConstraints = false
     }

@@ -45,7 +45,7 @@ final class CellCollectionViewCell: UICollectionViewCell {
         guard let url = URL(string: "https://image.tmdb.org/t/p/w500" + addresImage) else { return }
         URLSession.shared.dataTask(with: url) { data, _, _ in
             if let data = data, let image = UIImage(data: data) {
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak self] in guard let self = self else { return }
                     self.imageView.image = image
                 }
             }

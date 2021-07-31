@@ -294,7 +294,7 @@ final class ShowMoviesViewController: UIViewController {
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
                 self.json = try decoder.decode(Welcome.self, from: data)
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak self] in guard let self = self else { return }
                     self.moviesCollectionView.reloadData()
                 }
             } catch {
@@ -307,7 +307,6 @@ final class ShowMoviesViewController: UIViewController {
 extension ShowMoviesViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard let cells = json?.results.count else { return 0 }
-        print(cells)
         return cells
     }
 
