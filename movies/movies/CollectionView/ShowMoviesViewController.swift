@@ -294,7 +294,8 @@ final class ShowMoviesViewController: UIViewController {
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
                 self.json = try decoder.decode(Welcome.self, from: data)
-                DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
                     self.moviesCollectionView.reloadData()
                 }
             } catch {

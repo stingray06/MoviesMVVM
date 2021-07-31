@@ -58,7 +58,8 @@ final class AboutMovieViewController: UIViewController {
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
                 self.aboutMovie = try decoder.decode(Result.self, from: data)
-                DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
                     cell.aboutMoviesLabel.text = self.aboutMovie?.overview
                     guard let release = self.aboutMovie?.releaseDate else { return }
                     cell.releaseDateLabel.text = "Даты выхода: \(release))"
@@ -75,7 +76,8 @@ final class AboutMovieViewController: UIViewController {
         guard let url = URL(string: "https://image.tmdb.org/t/p/w500" + addresImage) else { return }
         URLSession.shared.dataTask(with: url) { data, _, _ in
             if let data = data, let image = UIImage(data: data) {
-                DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
                     cell.posterMovieImageView.image = image
                     cell.posterMovieImageView.layer.cornerRadius = 10
                     self.movieTable.reloadData()
