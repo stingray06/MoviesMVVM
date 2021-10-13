@@ -2,13 +2,13 @@
 // Copyright © RoadMap. All rights reserved.
 
 import UIKit
-/// Ячейка CollectionView
+
 final class CellCollectionViewCell: UICollectionViewCell {
     static let identifier = "photoCell"
 
     // MARK: - Private Properties
 
-    private var imageView: UIImageView = {
+    var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -36,20 +36,5 @@ final class CellCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.image = nil
-    }
-
-    // MARK: - Public Method
-
-    func fetchImageCollectionView(movie: Result) {
-        guard let addresImage = movie.posterPath else { return }
-        guard let url = URL(string: "https://image.tmdb.org/t/p/w500" + addresImage) else { return }
-        URLSession.shared.dataTask(with: url) { data, _, _ in
-            if let data = data, let image = UIImage(data: data) {
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.imageView.image = image
-                }
-            }
-        }.resume()
     }
 }

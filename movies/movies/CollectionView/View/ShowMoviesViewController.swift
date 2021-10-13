@@ -4,6 +4,17 @@
 import UIKit
 /// Контроллер
 final class ShowMoviesViewController: UIViewController {
+    // MARK: - Public Properties
+
+    var showModelView: ShowModelViewProtocol?
+
+    // MARK: - Initiation
+
+    convenience init(showModelView: ShowModelViewProtocol) {
+        self.init()
+        self.showModelView = showModelView
+    }
+
     // MARK: - Visual Components
 
     private let imageCell = UIImage()
@@ -21,28 +32,11 @@ final class ShowMoviesViewController: UIViewController {
         collectionViewLayout: UICollectionViewFlowLayout()
     )
 
-    // MARK: - Private Properties
-
-    private var json: Welcome?
-    private let latestURL =
-        "https://api.themoviedb.org/3/movie/upcoming?api_key=90f917324ecb224bd306de1b97b17591&language=ru-RU&page=3"
-    private let nowPlayingURL =
-        "https://api.themoviedb.org/3/movie/now_playing?api_key=90f917324ecb224bd306de1b97b17591&language=ru-RU&page=1"
-    private let upComingURL =
-        "https://api.themoviedb.org/3/movie/upcoming?api_key=90f917324ecb224bd306de1b97b17591&language=ru-RU&page=1"
-    private let popularURL =
-        "https://api.themoviedb.org/3/movie/popular?api_key=90f917324ecb224bd306de1b97b17591&language=ru-RU&page=1"
-    private let topRatedURL =
-        "https://api.themoviedb.org/3/movie/top_rated?api_key=90f917324ecb224bd306de1b97b17591&language=ru-RU&page=1"
-    private var urlMovies =
-        "https://api.themoviedb.org/3/movie/popular?api_key=90f917324ecb224bd306de1b97b17591&language=ru-RU&page=3"
-
     // MARK: - LyfeCycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         createViews()
-        fetchMovie()
         systemUnits()
     }
 
@@ -53,6 +47,7 @@ final class ShowMoviesViewController: UIViewController {
         navigationItem.title = "Library"
         navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.prefersLargeTitles = true
+        showModelView?.reloadData = { self.moviesCollectionView.reloadData() }
     }
 
     private func createViews() {
@@ -261,56 +256,36 @@ final class ShowMoviesViewController: UIViewController {
     @objc private func changeListMovies(sender: UIButton) {
         switch sender {
         case latestButton:
-            urlMovies = latestURL
-            fetchMovie()
+            showModelView?.fetchMovie(urlMovies: .latestURL)
         case nowPlayingButton:
-            urlMovies = nowPlayingURL
-            fetchMovie()
+            showModelView?.fetchMovie(urlMovies: .nowPlayingURL)
         case topRatedButton:
-            urlMovies = topRatedURL
-            fetchMovie()
+            showModelView?.fetchMovie(urlMovies: .topRatedURL)
         case upcomingButton:
-            urlMovies = upComingURL
-            fetchMovie()
+            showModelView?.fetchMovie(urlMovies: .upComingURL)
         case popularButton:
-            urlMovies = popularURL
-            fetchMovie()
+            showModelView?.fetchMovie(urlMovies: .popularURL)
         default:
             break
         }
     }
+}
 
-    private func fetchMovie() {
-        guard let url =
-            URL(
-                string: urlMovies
-            )
-        else { return }
-        let session = URLSession.shared
-        session.dataTask(with: url) { data, _, _ in
-            guard let data = data
-            else { return }
-            do {
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                self.json = try decoder.decode(Welcome.self, from: data)
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.moviesCollectionView.reloadData()
-                }
-            } catch {
-                print(error)
-            }
-        }.resume()
+// MARK: - Extension UICollectionViewDataSource
+
+extension ShowMoviesViewController: UICollectionViewDataSource {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
+        guard let cells = showModelView?.json?.results.count else { return 0 }
+        return cells
     }
 }
 
-extension ShowMoviesViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let cells = json?.results.count else { return 0 }
-        return cells
-    }
+// MARK: - Extension UICollectionViewDelegate
 
+extension ShowMoviesViewController: UICollectionViewDelegate {
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
@@ -320,11 +295,17 @@ extension ShowMoviesViewController: UICollectionViewDelegate, UICollectionViewDa
             for: indexPath
         ) as?
             CellCollectionViewCell else { return UICollectionViewCell() }
-        guard let movie = json?.results[indexPath.row] else { return UICollectionViewCell() }
-        itemCell.fetchImageCollectionView(movie: movie)
+        guard let movie = showModelView?.json?.results[indexPath.row] else { return UICollectionViewCell() }
+        showModelView?.fetchImageCollectionView(movie: movie, completion: { result in
+            DispatchQueue.main.async {
+                itemCell.imageView.image = result
+            }
+        })
         return itemCell
     }
 }
+
+// MARK: - Extension UICollectionViewDelegateFlowLayout
 
 extension ShowMoviesViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(
@@ -361,8 +342,8 @@ extension ShowMoviesViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let secondVC = AboutMovieViewController()
-        guard let numberID = json?.results[indexPath.row].id else { return }
-        secondVC.idMovie = numberID
+        guard let numberID = showModelView?.json?.results[indexPath.row].id else { return }
+        secondVC.movieID = numberID
         navigationController?.pushViewController(secondVC, animated: true)
     }
 }
