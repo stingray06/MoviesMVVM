@@ -10,11 +10,11 @@ final class AboutMovieViewController: UIViewController {
 
     // MARK: - Public Properties
 
-    var idMovie = Int()
+    var movieID = Int()
 
     // MARK: - Private Properties
 
-    private var aboutMovie: Result?
+    private var aboutMovie: DescriptionMovie?
     private let suffixURL = String()
 
     // MARK: - LyfeCycle
@@ -46,7 +46,7 @@ final class AboutMovieViewController: UIViewController {
     private func fetchDataAboutMovie(cell: AboutMovieTableViewCell, indexPath: IndexPath) {
         guard let url =
             URL(
-                string: "https://api.themoviedb.org/3/movie/" + "\(idMovie)" +
+                string: "https://api.themoviedb.org/3/movie/" + "\(movieID)" +
                     "?api_key=90f917324ecb224bd306de1b97b17591&language=ru-RU"
             )
         else { return }
@@ -57,7 +57,7 @@ final class AboutMovieViewController: UIViewController {
             do {
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
-                self.aboutMovie = try decoder.decode(Result.self, from: data)
+                self.aboutMovie = try decoder.decode(DescriptionMovie.self, from: data)
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     cell.aboutMoviesLabel.text = self.aboutMovie?.overview

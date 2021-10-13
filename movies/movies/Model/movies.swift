@@ -7,16 +7,14 @@ import Foundation
 // MARK: - Welcome
 
 /// Модель  данных
-struct Welcome: Decodable {
-    let page: Int
-    let results: [Result]
-    let totalPages, totalResults: Int
+struct Movies: Decodable {
+    let results: [DescriptionMovie]
 }
 
 // MARK: - Result
 
 /// Модель  данных
-struct Result: Decodable {
+struct DescriptionMovie: Decodable {
     let title: String?
     let overview: String?
     let releaseDate: String?
