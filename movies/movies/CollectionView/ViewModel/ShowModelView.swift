@@ -5,21 +5,21 @@ import UIKit
 
 // MARK: - Protocol
 
-protocol ShowModelViewProtocol {
-    var json: Movies? { get set }
+protocol ShowViewModelProtocol {
+    var movie: Movies? { get set }
     var reloadData: (() -> ())? { get set }
     var movies: ((Movies) -> ())? { get set }
     func fetchMovie(urlMovies: URLType)
     func fetchImageCollectionView(movie: DescriptionMovie, completion: @escaping (UIImage) -> ())
+    func changeListMovies(sender: Int)
 }
 
-final class ShowModelView: ShowModelViewProtocol {
+final class ShowViewModel: ShowViewModelProtocol {
     // MARK: - Public Properties
 
-    var json: Movies?
+    var movie: Movies?
     var reloadData: (() -> ())?
     var movies: ((Movies) -> ())?
-    var urlMovies = URLType.popularURL.rawValue
 
     // MARK: - Initiation
 
@@ -42,10 +42,10 @@ final class ShowModelView: ShowModelViewProtocol {
             do {
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
-                self.json = try decoder.decode(Movies.self, from: data)
+                self.movie = try decoder.decode(Movies.self, from: data)
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
-                    guard let movies = self.json else { return }
+                    guard let movies = self.movie else { return }
                     self.movies?(movies)
                     self.reloadData?()
                 }
@@ -64,5 +64,22 @@ final class ShowModelView: ShowModelViewProtocol {
             image = UIImage(data: result) ?? UIImage()
             completion(image)
         }.resume()
+    }
+
+    func changeListMovies(sender: Int) {
+        switch sender {
+        case 0:
+            fetchMovie(urlMovies: .latestURL)
+        case 1:
+            fetchMovie(urlMovies: .nowPlayingURL)
+        case 2:
+            fetchMovie(urlMovies: .topRatedURL)
+        case 3:
+            fetchMovie(urlMovies: .upComingURL)
+        case 4:
+            fetchMovie(urlMovies: .popularURL)
+        default:
+            break
+        }
     }
 }

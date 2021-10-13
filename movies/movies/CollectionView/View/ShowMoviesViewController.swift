@@ -6,13 +6,13 @@ import UIKit
 final class ShowMoviesViewController: UIViewController {
     // MARK: - Public Properties
 
-    var showModelView: ShowModelViewProtocol?
+    var showViewModel: ShowViewModelProtocol?
 
     // MARK: - Initiation
 
-    convenience init(showModelView: ShowModelViewProtocol) {
+    convenience init(showModelView: ShowViewModelProtocol) {
         self.init()
-        self.showModelView = showModelView
+        self.showViewModel = showModelView
     }
 
     // MARK: - Visual Components
@@ -47,7 +47,7 @@ final class ShowMoviesViewController: UIViewController {
         navigationItem.title = "Library"
         navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.prefersLargeTitles = true
-        showModelView?.reloadData = { self.moviesCollectionView.reloadData() }
+        showViewModel?.reloadData = { self.moviesCollectionView.reloadData() }
     }
 
     private func createViews() {
@@ -210,6 +210,7 @@ final class ShowMoviesViewController: UIViewController {
         latestButton.setTitleColor(.gray, for: .normal)
         latestButton.setTitleColor(.black, for: .highlighted)
         latestButton.translatesAutoresizingMaskIntoConstraints = false
+        latestButton.tag = 0
         buttonScrollView.addSubview(latestButton)
     }
 
@@ -220,6 +221,7 @@ final class ShowMoviesViewController: UIViewController {
         nowPlayingButton.setTitleColor(.gray, for: .normal)
         nowPlayingButton.setTitleColor(.black, for: .highlighted)
         nowPlayingButton.translatesAutoresizingMaskIntoConstraints = false
+        nowPlayingButton.tag = 1
         buttonScrollView.addSubview(nowPlayingButton)
     }
 
@@ -230,6 +232,7 @@ final class ShowMoviesViewController: UIViewController {
         topRatedButton.setTitleColor(.gray, for: .normal)
         topRatedButton.setTitleColor(.black, for: .highlighted)
         topRatedButton.translatesAutoresizingMaskIntoConstraints = false
+        topRatedButton.tag = 2
         buttonScrollView.addSubview(topRatedButton)
     }
 
@@ -240,6 +243,7 @@ final class ShowMoviesViewController: UIViewController {
         upcomingButton.setTitleColor(.gray, for: .normal)
         upcomingButton.setTitleColor(.black, for: .highlighted)
         upcomingButton.translatesAutoresizingMaskIntoConstraints = false
+        upcomingButton.tag = 3
         buttonScrollView.addSubview(upcomingButton)
     }
 
@@ -250,24 +254,12 @@ final class ShowMoviesViewController: UIViewController {
         popularButton.setTitleColor(.gray, for: .normal)
         popularButton.setTitleColor(.black, for: .highlighted)
         popularButton.translatesAutoresizingMaskIntoConstraints = false
+        popularButton.tag = 4
         buttonScrollView.addSubview(popularButton)
     }
 
     @objc private func changeListMovies(sender: UIButton) {
-        switch sender {
-        case latestButton:
-            showModelView?.fetchMovie(urlMovies: .latestURL)
-        case nowPlayingButton:
-            showModelView?.fetchMovie(urlMovies: .nowPlayingURL)
-        case topRatedButton:
-            showModelView?.fetchMovie(urlMovies: .topRatedURL)
-        case upcomingButton:
-            showModelView?.fetchMovie(urlMovies: .upComingURL)
-        case popularButton:
-            showModelView?.fetchMovie(urlMovies: .popularURL)
-        default:
-            break
-        }
+        showViewModel?.changeListMovies(sender: sender.tag)
     }
 }
 
@@ -278,7 +270,7 @@ extension ShowMoviesViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        guard let cells = showModelView?.json?.results.count else { return 0 }
+        guard let cells = showViewModel?.movie?.results.count else { return 0 }
         return cells
     }
 }
@@ -295,8 +287,8 @@ extension ShowMoviesViewController: UICollectionViewDelegate {
             for: indexPath
         ) as?
             CellCollectionViewCell else { return UICollectionViewCell() }
-        guard let movie = showModelView?.json?.results[indexPath.row] else { return UICollectionViewCell() }
-        showModelView?.fetchImageCollectionView(movie: movie, completion: { result in
+        guard let movie = showViewModel?.movie?.results[indexPath.row] else { return UICollectionViewCell() }
+        showViewModel?.fetchImageCollectionView(movie: movie, completion: { result in
             DispatchQueue.main.async {
                 itemCell.imageView.image = result
             }
@@ -342,7 +334,7 @@ extension ShowMoviesViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let secondVC = AboutMovieViewController()
-        guard let numberID = showModelView?.json?.results[indexPath.row].id else { return }
+        guard let numberID = showViewModel?.movie?.results[indexPath.row].id else { return }
         secondVC.movieID = numberID
         navigationController?.pushViewController(secondVC, animated: true)
     }
