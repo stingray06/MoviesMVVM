@@ -6,13 +6,13 @@ import UIKit
 final class ShowMoviesViewController: UIViewController {
     // MARK: - Public Properties
 
-    var showViewModel: ShowModelViewProtocol?
+    var showModelView: ShowModelViewProtocol?
 
     // MARK: - Initiation
 
-    convenience init(showViewModel: ShowModelViewProtocol) {
+    convenience init(showModelView: ShowModelViewProtocol) {
         self.init()
-        self.showViewModel = showViewModel
+        self.showModelView = showModelView
     }
 
     // MARK: - Visual Components
@@ -47,7 +47,7 @@ final class ShowMoviesViewController: UIViewController {
         navigationItem.title = "Library"
         navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.prefersLargeTitles = true
-        showViewModel?.reloadData = { self.moviesCollectionView.reloadData() }
+        showModelView?.reloadData = { self.moviesCollectionView.reloadData() }
     }
 
     private func createViews() {
@@ -256,15 +256,15 @@ final class ShowMoviesViewController: UIViewController {
     @objc private func changeListMovies(sender: UIButton) {
         switch sender {
         case latestButton:
-            showViewModel?.fetchMovie(urlMovies: .latestURL)
+            showModelView?.fetchMovie(urlMovies: .latestURL)
         case nowPlayingButton:
-            showViewModel?.fetchMovie(urlMovies: .nowPlayingURL)
+            showModelView?.fetchMovie(urlMovies: .nowPlayingURL)
         case topRatedButton:
-            showViewModel?.fetchMovie(urlMovies: .topRatedURL)
+            showModelView?.fetchMovie(urlMovies: .topRatedURL)
         case upcomingButton:
-            showViewModel?.fetchMovie(urlMovies: .upComingURL)
+            showModelView?.fetchMovie(urlMovies: .upComingURL)
         case popularButton:
-            showViewModel?.fetchMovie(urlMovies: .popularURL)
+            showModelView?.fetchMovie(urlMovies: .popularURL)
         default:
             break
         }
@@ -278,7 +278,7 @@ extension ShowMoviesViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        guard let cells = showViewModel?.json?.results.count else { return 0 }
+        guard let cells = showModelView?.json?.results.count else { return 0 }
         return cells
     }
 }
@@ -295,8 +295,8 @@ extension ShowMoviesViewController: UICollectionViewDelegate {
             for: indexPath
         ) as?
             CellCollectionViewCell else { return UICollectionViewCell() }
-        guard let movie = showViewModel?.json?.results[indexPath.row] else { return UICollectionViewCell() }
-        showViewModel?.fetchImageCollectionView(movie: movie, completion: { result in
+        guard let movie = showModelView?.json?.results[indexPath.row] else { return UICollectionViewCell() }
+        showModelView?.fetchImageCollectionView(movie: movie, completion: { result in
             DispatchQueue.main.async {
                 itemCell.imageView.image = result
             }
@@ -342,7 +342,7 @@ extension ShowMoviesViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let secondVC = AboutMovieViewController()
-        guard let numberID = showViewModel?.json?.results[indexPath.row].id else { return }
+        guard let numberID = showModelView?.json?.results[indexPath.row].id else { return }
         secondVC.movieID = numberID
         navigationController?.pushViewController(secondVC, animated: true)
     }
