@@ -8,10 +8,8 @@ import UIKit
 protocol ShowViewModelProtocol {
     var movie: Movies? { get set }
     var reloadData: (() -> ())? { get set }
-    var movies: ((Movies) -> ())? { get set }
     func fetchMovie(urlMovies: URLType)
     func fetchImageCollectionView(movie: DescriptionMovie, completion: @escaping (UIImage) -> ())
-    func changeListMovies(sender: Int)
 }
 
 final class ShowViewModel: ShowViewModelProtocol {
@@ -19,7 +17,12 @@ final class ShowViewModel: ShowViewModelProtocol {
 
     var movie: Movies?
     var reloadData: (() -> ())?
-    var movies: ((Movies) -> ())?
+    var urlMovies = URLType.popularURL.rawValue
+
+    // MARK: - Private Properties
+
+    private let movieAPIService: MovieAPIServiceProtocol = MovieAPIService()
+    private let imageAPIService: ImageAPIServiceProtocol = ImageAPIService()
 
     // MARK: - Initiation
 
@@ -30,56 +33,29 @@ final class ShowViewModel: ShowViewModelProtocol {
     // MARK: - Public Properties
 
     func fetchMovie(urlMovies: URLType) {
-        guard let url =
-            URL(
-                string: urlMovies.rawValue
-            )
-        else { return }
-        let session = URLSession.shared
-        session.dataTask(with: url) { data, _, _ in
-            guard let data = data
-            else { return }
-            do {
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                self.movie = try decoder.decode(Movies.self, from: data)
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    guard let movies = self.movie else { return }
-                    self.movies?(movies)
-                    self.reloadData?()
+        guard let url = URL(string: urlMovies.rawValue) else { return }
+        movieAPIService.getData(type: Movies.self, url: url) { (result: Result<Movies, Error>) in
+            DispatchQueue.main.async { [weak self] in
+                switch result {
+                case let .success(data):
+                    self?.movie = data
+                    self?.reloadData?()
+                case let .failure(error):
+                    print(error)
                 }
-            } catch {
-                print(error)
             }
-        }.resume()
+        }
     }
 
     func fetchImageCollectionView(movie: DescriptionMovie, completion: @escaping (UIImage) -> ()) {
-        var image = UIImage()
         guard let addresImage = movie.posterPath else { return }
-        guard let url = URL(string: "https://image.tmdb.org/t/p/w500" + addresImage) else { return }
-        URLSession.shared.dataTask(with: url) { result, _, _ in
-            guard let result = result else { return }
-            image = UIImage(data: result) ?? UIImage()
-            completion(image)
-        }.resume()
-    }
-
-    func changeListMovies(sender: Int) {
-        switch sender {
-        case 0:
-            fetchMovie(urlMovies: .latestURL)
-        case 1:
-            fetchMovie(urlMovies: .nowPlayingURL)
-        case 2:
-            fetchMovie(urlMovies: .topRatedURL)
-        case 3:
-            fetchMovie(urlMovies: .upComingURL)
-        case 4:
-            fetchMovie(urlMovies: .popularURL)
-        default:
-            break
+        imageAPIService.getImage(addresImage: addresImage) { (result: Result<UIImage, Error>) in
+            switch result {
+            case let .success(dataImage):
+                completion(dataImage)
+            case let .failure(error):
+                print(error)
+            }
         }
     }
 }
