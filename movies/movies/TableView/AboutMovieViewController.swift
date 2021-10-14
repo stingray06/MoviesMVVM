@@ -10,12 +10,19 @@ final class AboutMovieViewController: UIViewController {
 
     // MARK: - Public Properties
 
-    var movieID = Int()
+    var aboutViewModel: AboutViewModelProtocol?
 
     // MARK: - Private Properties
 
     private var aboutMovie: DescriptionMovie?
     private let suffixURL = String()
+
+    // MARK: - Initiation
+
+    convenience init(aboutModelView: AboutViewModelProtocol) {
+        self.init()
+        aboutViewModel = aboutModelView
+    }
 
     // MARK: - LyfeCycle
 
@@ -32,6 +39,7 @@ final class AboutMovieViewController: UIViewController {
         navigationController?.navigationBar.backgroundColor = .systemGray6
         navigationItem.largeTitleDisplayMode = .never
         view.backgroundColor = .systemGray6
+        aboutViewModel?.reloadData = { self.movieTable.reloadData() }
     }
 
     private func createMovieTable() {
@@ -41,49 +49,6 @@ final class AboutMovieViewController: UIViewController {
         view.addSubview(movieTable)
         movieTable.delegate = self
         movieTable.dataSource = self
-    }
-
-    private func fetchDataAboutMovie(cell: AboutMovieTableViewCell, indexPath: IndexPath) {
-        guard let url =
-            URL(
-                string: "https://api.themoviedb.org/3/movie/" + "\(movieID)" +
-                    "?api_key=90f917324ecb224bd306de1b97b17591&language=ru-RU"
-            )
-        else { return }
-        let session = URLSession.shared
-        session.dataTask(with: url) { data, _, _ in
-            guard let data = data
-            else { return }
-            do {
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                self.aboutMovie = try decoder.decode(DescriptionMovie.self, from: data)
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    cell.aboutMoviesLabel.text = self.aboutMovie?.overview
-                    guard let release = self.aboutMovie?.releaseDate else { return }
-                    cell.releaseDateLabel.text = "Даты выхода: \(release))"
-                    guard let mark = self.aboutMovie?.voteAverage else { return }
-                    cell.voteLabel.text = "Оценка \(mark)"
-                    cell.titleMoviesLabel.text = self.aboutMovie?.title
-                    self.movieTable.reloadData()
-                }
-            } catch {
-                print(error)
-            }
-        }.resume()
-        guard let addresImage = aboutMovie?.posterPath else { return }
-        guard let url = URL(string: "https://image.tmdb.org/t/p/w500" + addresImage) else { return }
-        URLSession.shared.dataTask(with: url) { data, _, _ in
-            if let data = data, let image = UIImage(data: data) {
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    cell.posterMovieImageView.image = image
-                    cell.posterMovieImageView.layer.cornerRadius = 10
-                    self.movieTable.reloadData()
-                }
-            }
-        }.resume()
     }
 }
 
@@ -98,7 +63,13 @@ extension AboutMovieViewController: UITableViewDelegate, UITableViewDataSource {
             for: indexPath
         ) as?
             AboutMovieTableViewCell else { return UITableViewCell() }
-        fetchDataAboutMovie(cell: cellTable, indexPath: indexPath)
+        guard let movieID = aboutViewModel?.movieID else { return cellTable }
+        aboutViewModel?.fetchDataAboutMovie(cell: cellTable, indexPath: indexPath, movieID: movieID)
+        aboutViewModel?.fetchPosterMovie(cell: cellTable, indexPath: indexPath, movieID: movieID) { image in
+            DispatchQueue.main.async {
+                cellTable.posterMovieImageView.image = image
+            }
+        }
         return cellTable
     }
 

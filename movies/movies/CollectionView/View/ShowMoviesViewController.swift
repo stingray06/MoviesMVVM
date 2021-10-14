@@ -10,9 +10,9 @@ final class ShowMoviesViewController: UIViewController {
 
     // MARK: - Initiation
 
-    convenience init(showModelView: ShowViewModelProtocol) {
+    convenience init(showViewModel: ShowViewModelProtocol) {
         self.init()
-        self.showViewModel = showModelView
+        self.showViewModel = showViewModel
     }
 
     // MARK: - Visual Components
@@ -210,7 +210,6 @@ final class ShowMoviesViewController: UIViewController {
         latestButton.setTitleColor(.gray, for: .normal)
         latestButton.setTitleColor(.black, for: .highlighted)
         latestButton.translatesAutoresizingMaskIntoConstraints = false
-        latestButton.tag = 0
         buttonScrollView.addSubview(latestButton)
     }
 
@@ -221,7 +220,6 @@ final class ShowMoviesViewController: UIViewController {
         nowPlayingButton.setTitleColor(.gray, for: .normal)
         nowPlayingButton.setTitleColor(.black, for: .highlighted)
         nowPlayingButton.translatesAutoresizingMaskIntoConstraints = false
-        nowPlayingButton.tag = 1
         buttonScrollView.addSubview(nowPlayingButton)
     }
 
@@ -232,7 +230,6 @@ final class ShowMoviesViewController: UIViewController {
         topRatedButton.setTitleColor(.gray, for: .normal)
         topRatedButton.setTitleColor(.black, for: .highlighted)
         topRatedButton.translatesAutoresizingMaskIntoConstraints = false
-        topRatedButton.tag = 2
         buttonScrollView.addSubview(topRatedButton)
     }
 
@@ -243,7 +240,6 @@ final class ShowMoviesViewController: UIViewController {
         upcomingButton.setTitleColor(.gray, for: .normal)
         upcomingButton.setTitleColor(.black, for: .highlighted)
         upcomingButton.translatesAutoresizingMaskIntoConstraints = false
-        upcomingButton.tag = 3
         buttonScrollView.addSubview(upcomingButton)
     }
 
@@ -254,12 +250,24 @@ final class ShowMoviesViewController: UIViewController {
         popularButton.setTitleColor(.gray, for: .normal)
         popularButton.setTitleColor(.black, for: .highlighted)
         popularButton.translatesAutoresizingMaskIntoConstraints = false
-        popularButton.tag = 4
         buttonScrollView.addSubview(popularButton)
     }
 
     @objc private func changeListMovies(sender: UIButton) {
-        showViewModel?.changeListMovies(sender: sender.tag)
+        switch sender {
+        case latestButton:
+            showViewModel?.fetchMovie(urlMovies: .latestURL)
+        case nowPlayingButton:
+            showViewModel?.fetchMovie(urlMovies: .nowPlayingURL)
+        case topRatedButton:
+            showViewModel?.fetchMovie(urlMovies: .topRatedURL)
+        case upcomingButton:
+            showViewModel?.fetchMovie(urlMovies: .upComingURL)
+        case popularButton:
+            showViewModel?.fetchMovie(urlMovies: .popularURL)
+        default:
+            break
+        }
     }
 }
 
@@ -271,6 +279,7 @@ extension ShowMoviesViewController: UICollectionViewDataSource {
         numberOfItemsInSection section: Int
     ) -> Int {
         guard let cells = showViewModel?.movie?.results.count else { return 0 }
+        print(cells)
         return cells
     }
 }
@@ -333,9 +342,8 @@ extension ShowMoviesViewController: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let secondVC = AboutMovieViewController()
         guard let numberID = showViewModel?.movie?.results[indexPath.row].id else { return }
-        secondVC.movieID = numberID
+        let secondVC = AboutMovieViewController(aboutModelView: AboutViewModel(movieID: numberID))
         navigationController?.pushViewController(secondVC, animated: true)
     }
 }

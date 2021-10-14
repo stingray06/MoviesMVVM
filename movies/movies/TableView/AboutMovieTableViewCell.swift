@@ -81,6 +81,7 @@ final class AboutMovieTableViewCell: UITableViewCell {
         posterMovieImageView.contentMode = .scaleToFill
         posterMovieImageView.clipsToBounds = true
         posterMovieImageView.backgroundColor = .gray
+        posterMovieImageView.layer.cornerRadius = 10
         addSubview(posterMovieImageView)
         posterMovieImageView.translatesAutoresizingMaskIntoConstraints = false
     }
