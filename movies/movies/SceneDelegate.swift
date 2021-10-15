@@ -5,6 +5,8 @@ import UIKit
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    var coordinator: ApplicationCoordinator?
+
     func scene(
         _ scene: UIScene,
         willConnectTo session: UISceneSession,
@@ -13,8 +15,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window?.windowScene = windowScene
         window?.makeKeyAndVisible()
-        let firstVC = ShowMoviesViewController(showViewModel: ShowViewModel())
-        let firstNavC = UINavigationController(rootViewController: firstVC)
-        window?.rootViewController = firstNavC
+        coordinator = ApplicationCoordinator()
+        coordinator?.start()
     }
 }
