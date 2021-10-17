@@ -5,7 +5,7 @@ import Foundation
 import UIKit
 
 protocol MovieAPIServiceProtocol {
-    func getData<T: Decodable>(type: T.Type, url: URL, completion: @escaping (Result<T, Error>) -> ())
+    func getData<T: Decodable>(type: T.Type, url: String, completion: @escaping (Result<T, Error>) -> ())
     var beginURL: String { get }
     var endURL: String { get }
 }
@@ -18,7 +18,9 @@ final class MovieAPIService: MovieAPIServiceProtocol {
 
     // MARK: - Public Method
 
-    func getData<T: Decodable>(type: T.Type, url: URL, completion: @escaping (Result<T, Error>) -> ()) {
+    func getData<T: Decodable>(type: T.Type, url: String, completion: @escaping (Result<T, Error>) -> ()) {
+        let url = URL(string: url)
+        guard let url = url else { return }
         let session = URLSession.shared
         session.dataTask(with: url) { data, _, error in
             if let error = error {

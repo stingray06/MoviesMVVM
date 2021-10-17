@@ -257,15 +257,15 @@ final class ShowMoviesViewController: UIViewController {
     @objc private func changeListMovies(sender: UIButton) {
         switch sender {
         case latestButton:
-            showViewModel?.fetchMovie(urlMovies: .latestURL)
+            showViewModel?.fetchMovie(urlMovies: URLType.latestURL.rawValue)
         case nowPlayingButton:
-            showViewModel?.fetchMovie(urlMovies: .nowPlayingURL)
+            showViewModel?.fetchMovie(urlMovies: URLType.nowPlayingURL.rawValue)
         case topRatedButton:
-            showViewModel?.fetchMovie(urlMovies: .topRatedURL)
+            showViewModel?.fetchMovie(urlMovies: URLType.topRatedURL.rawValue)
         case upcomingButton:
-            showViewModel?.fetchMovie(urlMovies: .upComingURL)
+            showViewModel?.fetchMovie(urlMovies: URLType.upComingURL.rawValue)
         case popularButton:
-            showViewModel?.fetchMovie(urlMovies: .popularURL)
+            showViewModel?.fetchMovie(urlMovies: URLType.popularURL.rawValue)
         default:
             break
         }
@@ -279,7 +279,7 @@ extension ShowMoviesViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        guard let cells = showViewModel?.movie?.results.count else { return 0 }
+        guard let cells = showViewModel?.movie?.count else { return 0 }
         print(cells)
         return cells
     }
@@ -297,7 +297,7 @@ extension ShowMoviesViewController: UICollectionViewDelegate {
             for: indexPath
         ) as?
             CellCollectionViewCell else { return UICollectionViewCell() }
-        guard let movie = showViewModel?.movie?.results[indexPath.row] else { return UICollectionViewCell() }
+        guard let movie = showViewModel?.movie?[indexPath.row] else { return UICollectionViewCell() }
         showViewModel?.fetchImageCollectionView(movie: movie, completion: { result in
             DispatchQueue.main.async {
                 itemCell.imageView.image = result
@@ -343,7 +343,7 @@ extension ShowMoviesViewController: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let numberID = showViewModel?.movie?.results[indexPath.row].id else { return }
+        guard let numberID = showViewModel?.movie?[indexPath.row].id else { return }
         transitMovieID?(numberID)
     }
 }
