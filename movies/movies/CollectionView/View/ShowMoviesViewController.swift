@@ -7,6 +7,7 @@ final class ShowMoviesViewController: UIViewController {
     // MARK: - Public Properties
 
     var showViewModel: ShowViewModelProtocol?
+    var transitMovieID: ((Int) -> Void)?
 
     // MARK: - Initiation
 
@@ -343,7 +344,6 @@ extension ShowMoviesViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let numberID = showViewModel?.movie?.results[indexPath.row].id else { return }
-        let secondVC = AboutMovieViewController(aboutModelView: AboutViewModel(movieID: numberID))
-        navigationController?.pushViewController(secondVC, animated: true)
+        transitMovieID?(numberID)
     }
 }
