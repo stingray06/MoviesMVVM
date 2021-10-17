@@ -26,6 +26,8 @@ final class AboutViewModel: AboutViewModelProtocol {
     private var aboutMovie: DescriptionMovie?
     private let movieAPIService: MovieAPIServiceProtocol = MovieAPIService()
     private let imageAPIService: ImageAPIServiceProtocol = ImageAPIService()
+    private let repository: RepositoryProtocol = Repository()
+    private let imageService: ImageServiceProtocol = ImageService()
 
     init(movieID: Int) {
         self.movieID = movieID
@@ -34,23 +36,16 @@ final class AboutViewModel: AboutViewModelProtocol {
     // MARK: - Public Methods
 
     func fetchDataAboutMovie(cell: AboutMovieTableViewCell, indexPath: IndexPath, movieID: Int) {
-        guard let url = URL(string: movieAPIService.beginURL + "\(movieID)" + movieAPIService.endURL) else { return }
-        movieAPIService.getData(type: DescriptionMovie.self, url: url) { (result: Result<DescriptionMovie, Error>) in
-            DispatchQueue.main.async { [weak self] in
-                switch result {
-                case let .success(data):
-                    guard let self = self else { return }
-                    cell.aboutMoviesLabel.text = data.overview
-                    guard let release = data.releaseDate else { return }
-                    cell.releaseDateLabel.text = "Даты выхода: \(release))"
-                    guard let mark = data.voteAverage else { return }
-                    cell.voteLabel.text = "Оценка \(mark)"
-                    cell.titleMoviesLabel.text = data.title
-                    self.aboutMovie = data
-                    self.reloadData?()
-                case let .failure(error):
-                    print(error)
-                }
+        repository.getAboutMovie(type: .realmData, movieID: movieID) { [weak self] data in
+            DispatchQueue.main.async {
+                cell.aboutMoviesLabel.text = data.overview
+                guard let release = data.releaseDate else { return }
+                cell.releaseDateLabel.text = "Даты выхода: \(release))"
+                guard let mark = data.voteAverage else { return }
+                cell.voteLabel.text = "Оценка \(mark)"
+                cell.titleMoviesLabel.text = data.title
+                self?.aboutMovie = data
+                self?.reloadData?()
             }
         }
     }
@@ -62,13 +57,11 @@ final class AboutViewModel: AboutViewModelProtocol {
         completion: @escaping (UIImage) -> ()
     ) {
         guard let addresImage = aboutMovie?.posterPath else { return }
-        imageAPIService.getImage(addresImage: addresImage) { (result: Result<UIImage, Error>) in
-            switch result {
-            case let .success(image):
+        imageService.getImage(addresImage: addresImage) { [weak self] image in
+            DispatchQueue.main.async {
                 cell.posterMovieImageView.image = image
-                self.reloadData?()
-            case let .failure(error):
-                print(error)
+                completion(image)
+                self?.reloadData?()
             }
         }
     }

@@ -5,14 +5,13 @@ import Foundation
 import UIKit
 
 protocol ImageAPIServiceProtocol {
-    func getImage(addresImage: String, completion: @escaping (Result<UIImage, Error>) -> ())
+    func getImage(url: URL, completion: @escaping (Result<UIImage, Error>) -> ())
 }
 
 final class ImageAPIService: ImageAPIServiceProtocol {
     // MARK: - Public Method
 
-    func getImage(addresImage: String, completion: @escaping (Result<UIImage, Error>) -> ()) {
-        guard let url = URL(string: "https://image.tmdb.org/t/p/w500" + addresImage) else { return }
+    func getImage(url: URL, completion: @escaping (Swift.Result<UIImage, Error>) -> ()) {
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
                 completion(.failure(error))
