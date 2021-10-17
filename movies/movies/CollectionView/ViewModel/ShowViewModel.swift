@@ -6,39 +6,40 @@ import UIKit
 // MARK: - Protocol
 
 protocol ShowViewModelProtocol {
-    var movie: Movies? { get set }
+    var movie: [DescriptionMovie]? { get set }
     var reloadData: (() -> ())? { get set }
-    func fetchMovie(urlMovies: URLType)
-    func fetchImageCollectionView(movie: DescriptionMovie, completion: @escaping (UIImage) -> ())
+    func fetchMovies(urlMovies: String)
 }
 
 final class ShowViewModel: ShowViewModelProtocol {
     // MARK: - Public Properties
 
-    var movie: Movies?
+    var movie: [DescriptionMovie]?
     var reloadData: (() -> ())?
     var urlMovies = URLType.popularURL.rawValue
 
     // MARK: - Private Properties
 
     private let movieAPIService: MovieAPIServiceProtocol = MovieAPIService()
-    private let imageAPIService: ImageAPIServiceProtocol = ImageAPIService()
+    private let repository: RepositoryProtocol = Repository()
 
     // MARK: - Initiation
 
     init() {
-        fetchMovie(urlMovies: URLType.latestURL)
+        fetchMovies(urlMovies: URLType.latestURL.rawValue)
     }
 
     // MARK: - Public Properties
 
-    func fetchMovie(urlMovies: URLType) {
-        guard let url = URL(string: urlMovies.rawValue) else { return }
-        movieAPIService.getData(type: Movies.self, url: url) { [weak self] result in
+    func loadSaveMovies(urlMovies: String) {
+        movieAPIService.getData(type: Movies.self, url: urlMovies) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case let .success(data):
-                    self?.movie = data
+                    self?.repository.saveMovies(type: .realmData, urlMovies: urlMovies, movies: data.results)
+                    self?.repository.getMovies(.realmData, urlMovies: urlMovies) { [weak self] movies in
+                        self?.movie = movies
+                    }
                     self?.reloadData?()
                 case let .failure(error):
                     print(error)
@@ -47,15 +48,42 @@ final class ShowViewModel: ShowViewModelProtocol {
         }
     }
 
-    func fetchImageCollectionView(movie: DescriptionMovie, completion: @escaping (UIImage) -> ()) {
-        guard let addresImage = movie.posterPath else { return }
-        imageAPIService.getImage(addresImage: addresImage) { result in
-            switch result {
-            case let .success(dataImage):
-                completion(dataImage)
-            case let .failure(error):
-                print(error)
+    func saveLoadMovies(urlMovies: String) {
+        repository.getMovies(.realmData, urlMovies: urlMovies) { [weak self] movies in
+            if movies.isEmpty {
+                self?.movieAPIService.getData(type: Movies.self, url: urlMovies) { [weak self] result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case let .success(data):
+                            self?.repository.saveMovies(
+                                type: .realmData,
+                                urlMovies: urlMovies,
+                                movies: data.results
+                            )
+                            self?.repository.getMovies(.realmData, urlMovies: urlMovies) { [weak self] movies in
+                                self?.movie = movies
+                            }
+                            self?.reloadData?()
+                        case let .failure(error):
+                            print(error)
+                        }
+                    }
+                }
             }
+            self?.movie = movies
+        }
+        reloadData?()
+    }
+
+    func fetchMovies(urlMovies: String) {
+        var moviesLoad: [DescriptionMovie] = []
+        repository.getMovies(.realmData, urlMovies: urlMovies) { movies in
+            moviesLoad = movies
+        }
+        if moviesLoad.isEmpty {
+            loadSaveMovies(urlMovies: urlMovies)
+        } else {
+            saveLoadMovies(urlMovies: urlMovies)
         }
     }
 }
