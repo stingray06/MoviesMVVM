@@ -3,7 +3,8 @@
 
 import UIKit
 /// Base Coordinator
-class BaseCoordinator { var childCoordinators: [BaseCoordinator] = []
+class BaseCoordinator {
+    var childCoordinators: [BaseCoordinator] = []
 
     // MARK: - Public Methods
 

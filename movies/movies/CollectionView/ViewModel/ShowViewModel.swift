@@ -34,8 +34,8 @@ final class ShowViewModel: ShowViewModelProtocol {
 
     func fetchMovie(urlMovies: URLType) {
         guard let url = URL(string: urlMovies.rawValue) else { return }
-        movieAPIService.getData(type: Movies.self, url: url) { (result: Result<Movies, Error>) in
-            DispatchQueue.main.async { [weak self] in
+        movieAPIService.getData(type: Movies.self, url: url) { [weak self] result in
+            DispatchQueue.main.async {
                 switch result {
                 case let .success(data):
                     self?.movie = data
@@ -49,7 +49,7 @@ final class ShowViewModel: ShowViewModelProtocol {
 
     func fetchImageCollectionView(movie: DescriptionMovie, completion: @escaping (UIImage) -> ()) {
         guard let addresImage = movie.posterPath else { return }
-        imageAPIService.getImage(addresImage: addresImage) { (result: Result<UIImage, Error>) in
+        imageAPIService.getImage(addresImage: addresImage) { result in
             switch result {
             case let .success(dataImage):
                 completion(dataImage)
