@@ -15,7 +15,7 @@ final class Assembly: AssemblyProtocol {
 
     func createMainModule() -> UIViewController {
         let showView = ShowMoviesViewController(showViewModel: ShowViewModel())
-        showView.showViewModel?.fetchMovie(urlMovies: URLType.popularURL.rawValue)
+        showView.showViewModel?.fetchMovies(urlMovies: URLType.popularURL.rawValue)
         return showView
     }
 

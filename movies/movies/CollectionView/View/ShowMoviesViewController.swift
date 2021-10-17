@@ -257,15 +257,15 @@ final class ShowMoviesViewController: UIViewController {
     @objc private func changeListMovies(sender: UIButton) {
         switch sender {
         case latestButton:
-            showViewModel?.fetchMovie(urlMovies: URLType.latestURL.rawValue)
+            showViewModel?.fetchMovies(urlMovies: URLType.latestURL.rawValue)
         case nowPlayingButton:
-            showViewModel?.fetchMovie(urlMovies: URLType.nowPlayingURL.rawValue)
+            showViewModel?.fetchMovies(urlMovies: URLType.nowPlayingURL.rawValue)
         case topRatedButton:
-            showViewModel?.fetchMovie(urlMovies: URLType.topRatedURL.rawValue)
+            showViewModel?.fetchMovies(urlMovies: URLType.topRatedURL.rawValue)
         case upcomingButton:
-            showViewModel?.fetchMovie(urlMovies: URLType.upComingURL.rawValue)
+            showViewModel?.fetchMovies(urlMovies: URLType.upComingURL.rawValue)
         case popularButton:
-            showViewModel?.fetchMovie(urlMovies: URLType.popularURL.rawValue)
+            showViewModel?.fetchMovies(urlMovies: URLType.popularURL.rawValue)
         default:
             break
         }
@@ -280,7 +280,6 @@ extension ShowMoviesViewController: UICollectionViewDataSource {
         numberOfItemsInSection section: Int
     ) -> Int {
         guard let cells = showViewModel?.movie?.count else { return 0 }
-        print(cells)
         return cells
     }
 }
@@ -298,7 +297,7 @@ extension ShowMoviesViewController: UICollectionViewDelegate {
         ) as?
             CellCollectionViewCell else { return UICollectionViewCell() }
         guard let movie = showViewModel?.movie?[indexPath.row] else { return UICollectionViewCell() }
-        showViewModel?.fetchImageCollectionView(movie: movie, completion: { result in
+        itemCell.fetchImageCollectionView(movie: movie, completion: { result in
             DispatchQueue.main.async {
                 itemCell.imageView.image = result
             }

@@ -8,6 +8,7 @@ final class CellCollectionViewCell: UICollectionViewCell {
 
     // MARK: - Private Properties
 
+    private let imageService = ImageService()
     var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -36,5 +37,14 @@ final class CellCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.image = nil
+    }
+
+    func fetchImageCollectionView(movie: DescriptionMovie, completion: @escaping (UIImage) -> ()) {
+        guard let addresImage = movie.posterPath else { return }
+        imageService.getImage(addresImage: addresImage) { image in
+            DispatchQueue.main.async {
+                completion(image)
+            }
+        }
     }
 }
