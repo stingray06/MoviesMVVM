@@ -13,6 +13,7 @@ protocol AboutViewModelProtocol {
     )
     var reloadData: (() -> ())? { get set }
     var movieID: Int { get set }
+    var aboutMovie: DescriptionMovie? { get set }
 }
 
 final class AboutViewModel: AboutViewModelProtocol {
@@ -23,7 +24,7 @@ final class AboutViewModel: AboutViewModelProtocol {
 
     // MARK: - Private Properties
 
-    private var aboutMovie: DescriptionMovie?
+    var aboutMovie: DescriptionMovie?
     private let movieAPIService: MovieAPIServiceProtocol = MovieAPIService()
     private let imageAPIService: ImageAPIServiceProtocol = ImageAPIService()
     private let repository: RepositoryProtocol = Repository()

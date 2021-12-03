@@ -1,11 +1,6 @@
 // MoviesTests.swift
 // Copyright © RoadMap. All rights reserved.
 
-//
-//  moviesTests
-//
-//  Created by Iurii Kotikhin on 15.10.2021.
-//
 @testable import movies
 
 import XCTest
@@ -30,6 +25,7 @@ final class MoskAboutViewModel: AboutViewModelProtocol {
     var reloadData: (() -> ())?
     var movieID = 333
     var aboutViewModel: AboutViewModel?
+    var aboutMovie: DescriptionMovie?
 }
 
 final class MoviesTests: XCTestCase {

@@ -16,7 +16,7 @@ final class RealmData: RealmDataProtocol {
             let realm = try Realm()
             realm.beginWrite()
             movies.forEach { movie in
-                var object = DescriptionMovieRealm()
+                let object = DescriptionMovieRealm()
                 guard let id = movie.id,
                       let overview = movie.overview,
                       let posterPath = movie.posterPath,
@@ -42,7 +42,8 @@ final class RealmData: RealmDataProtocol {
     func getMovies(urlMovies: String) -> [DescriptionMovie] {
         var movies: [DescriptionMovie] = []
         do { let realm = try Realm()
-            print(realm.configuration.fileURL)
+            guard let printURL = realm.configuration.fileURL else { return [] }
+            print(printURL)
             var moviesRealm = realm.objects(DescriptionMovieRealm.self)
             moviesRealm = moviesRealm.filter("category = '\(urlMovies)'")
             movies = moviesRealm.map { object in

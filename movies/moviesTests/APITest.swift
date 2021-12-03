@@ -1,12 +1,6 @@
 // APITest.swift
 // Copyright © RoadMap. All rights reserved.
 
-//
-//  MovieAPITest.swift
-//  moviesTests
-//
-//  Created by Iurii Kotikhin on 18.10.2021.
-//
 @testable import movies
 
 import XCTest

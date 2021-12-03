@@ -22,6 +22,8 @@
 		C4423ABC27164C1F00C0FB86 /* ShowViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4423ABB27164C1F00C0FB86 /* ShowViewModel.swift */; };
 		C4423ABE2716543B00C0FB86 /* URL_ Enum.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4423ABD2716543B00C0FB86 /* URL_ Enum.swift */; };
 		C4475F7F271D2F6400C77428 /* APITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4475F77271D2EFB00C77428 /* APITest.swift */; };
+		C4475F86271D60F200C77428 /* ShowViewModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4475F83271D605D00C77428 /* ShowViewModelTest.swift */; };
+		C4475F88271D617700C77428 /* AboutViewModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4475F87271D617700C77428 /* AboutViewModelTest.swift */; };
 		C4502AA1271793A20090FBE8 /* MovieAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4502AA0271793A20090FBE8 /* MovieAPIService.swift */; };
 		C4502AA3271793B40090FBE8 /* ImageAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4502AA2271793B40090FBE8 /* ImageAPIService.swift */; };
 		C4502AA62717942E0090FBE8 /* AboutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4502AA52717942E0090FBE8 /* AboutViewModel.swift */; };
@@ -72,6 +74,8 @@
 		C4423ABB27164C1F00C0FB86 /* ShowViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowViewModel.swift; sourceTree = "<group>"; };
 		C4423ABD2716543B00C0FB86 /* URL_ Enum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL_ Enum.swift"; sourceTree = "<group>"; };
 		C4475F77271D2EFB00C77428 /* APITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APITest.swift; sourceTree = "<group>"; };
+		C4475F83271D605D00C77428 /* ShowViewModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowViewModelTest.swift; sourceTree = "<group>"; };
+		C4475F87271D617700C77428 /* AboutViewModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewModelTest.swift; sourceTree = "<group>"; };
 		C4502AA0271793A20090FBE8 /* MovieAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieAPIService.swift; sourceTree = "<group>"; };
 		C4502AA2271793B40090FBE8 /* ImageAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAPIService.swift; sourceTree = "<group>"; };
 		C4502AA52717942E0090FBE8 /* AboutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewModel.swift; sourceTree = "<group>"; };
@@ -141,16 +145,10 @@
 		C40EB8CE26AFA4F800AE2434 /* movies */ = {
 			isa = PBXGroup;
 			children = (
-				C40EB8CF26AFA4F800AE2434 /* AppDelegate.swift */,
-				C40EB8D126AFA4F800AE2434 /* SceneDelegate.swift */,
-				C4B91249271C155C00A76016 /* Coordinator */,
-				C4811A4E271BB18400A75BFA /* ImageService */,
-				C4353597271BA53C00790AE5 /* Repository */,
-				C4423AC127169FA900C0FB86 /* Support */,
-				C4502A9F2717933D0090FBE8 /* NetworkService */,
-				C4103A2D26B4476D0095111C /* CollectionView */,
-				C4103A2E26B4478C0095111C /* TableView */,
-				C4103A2F26B447A40095111C /* Model */,
+				C4420937275A060A00E86BAB /* Presentation */,
+				C4420934275A038C00E86BAB /* Domain */,
+				C4420931275A01F100E86BAB /* Application */,
+				C4420933275A02E500E86BAB /* Data */,
 				C40EB8D526AFA4F800AE2434 /* Main.storyboard */,
 				C40EB8D826AFA4FA00AE2434 /* Assets.xcassets */,
 				C40EB8DA26AFA4FA00AE2434 /* LaunchScreen.storyboard */,
@@ -179,21 +177,70 @@
 			path = TableView;
 			sourceTree = "<group>";
 		};
-		C4103A2F26B447A40095111C /* Model */ = {
+		C4420931275A01F100E86BAB /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				C40EB8CF26AFA4F800AE2434 /* AppDelegate.swift */,
+				C40EB8D126AFA4F800AE2434 /* SceneDelegate.swift */,
+				C451AB7627181CA500D40842 /* Assembly.swift */,
+				C4420932275A024B00E86BAB /* Navigation */,
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
+		C4420932275A024B00E86BAB /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				C451AB7427181AF400D40842 /* ApplicationCoordinator.swift */,
+				C451AB72271814B500D40842 /* BaseCoordinator.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+		C4420933275A02E500E86BAB /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				C4353598271BA56400790AE5 /* RealmData.swift */,
+				C4502A9F2717933D0090FBE8 /* NetworkService */,
+				C4811A4E271BB18400A75BFA /* ImageService */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		C4420934275A038C00E86BAB /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				C4420935275A048800E86BAB /* Entities */,
+				C435359A271BA57200790AE5 /* Repository.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		C4420935275A048800E86BAB /* Entities */ = {
 			isa = PBXGroup;
 			children = (
 				C40EB8E526AFD4B500AE2434 /* movies.swift */,
 			);
-			path = Model;
+			path = Entities;
 			sourceTree = "<group>";
 		};
-		C4353597271BA53C00790AE5 /* Repository */ = {
+		C4420937275A060A00E86BAB /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
-				C4353598271BA56400790AE5 /* RealmData.swift */,
-				C435359A271BA57200790AE5 /* Repository.swift */,
+				C4420939275A06DD00E86BAB /* Utilities */,
+				C4B91249271C155C00A76016 /* Coordinator */,
+				C4103A2D26B4476D0095111C /* CollectionView */,
+				C4103A2E26B4478C0095111C /* TableView */,
 			);
-			path = Repository;
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		C4420939275A06DD00E86BAB /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				C4423ABD2716543B00C0FB86 /* URL_ Enum.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 		C4423ABF27169F7100C0FB86 /* ViewModel */ = {
@@ -211,14 +258,6 @@
 				C4C197D426B0F2CF00CA92BA /* CellCollectionViewCell.swift */,
 			);
 			path = View;
-			sourceTree = "<group>";
-		};
-		C4423AC127169FA900C0FB86 /* Support */ = {
-			isa = PBXGroup;
-			children = (
-				C4423ABD2716543B00C0FB86 /* URL_ Enum.swift */,
-			);
-			path = Support;
 			sourceTree = "<group>";
 		};
 		C4502A9F2717933D0090FBE8 /* NetworkService */ = {
@@ -248,7 +287,9 @@
 		C451AB7F2718E2E400D40842 /* moviesTests */ = {
 			isa = PBXGroup;
 			children = (
+				C4475F83271D605D00C77428 /* ShowViewModelTest.swift */,
 				C451AB802718E2E400D40842 /* MoviesTests.swift */,
+				C4475F87271D617700C77428 /* AboutViewModelTest.swift */,
 				C4475F77271D2EFB00C77428 /* APITest.swift */,
 				C4B91258271C3A6F00A76016 /* RepositoryTest.swift */,
 				C451AB822718E2E400D40842 /* Info.plist */,
@@ -269,10 +310,7 @@
 		C4B91249271C155C00A76016 /* Coordinator */ = {
 			isa = PBXGroup;
 			children = (
-				C451AB72271814B500D40842 /* BaseCoordinator.swift */,
 				C451AB782718210600D40842 /* MoviesCoordinator.swift */,
-				C451AB7627181CA500D40842 /* Assembly.swift */,
-				C451AB7427181AF400D40842 /* ApplicationCoordinator.swift */,
 			);
 			path = Coordinator;
 			sourceTree = "<group>";
@@ -492,8 +530,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				C4475F7F271D2F6400C77428 /* APITest.swift in Sources */,
+				C4475F88271D617700C77428 /* AboutViewModelTest.swift in Sources */,
 				C451AB812718E2E400D40842 /* MoviesTests.swift in Sources */,
 				C4B91259271C3A6F00A76016 /* RepositoryTest.swift in Sources */,
+				C4475F86271D60F200C77428 /* ShowViewModelTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

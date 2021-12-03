@@ -1,11 +1,6 @@
 // RepositoryTest.swift
 // Copyright © RoadMap. All rights reserved.
 
-//  RepositoryTest.swift
-//  moviesTests
-//
-//  Created by Iurii Kotikhin on 17.10.2021.
-//
 @testable import movies
 
 import XCTest
@@ -27,11 +22,6 @@ final class RepositoryTest: XCTestCase {
 
     override func tearDownWithError() throws {
         repository = nil
-    }
-
-    func testGetMovies() throws {
-        showViewModel.fetchMovies(urlMovies: URLType.latestURL.rawValue)
-        XCTAssertEqual(showViewModel.movie?.count, 20)
     }
 
     func testGetMovie() throws {
@@ -59,15 +49,5 @@ final class RepositoryTest: XCTestCase {
             numberMovies = result.count
             XCTAssertEqual(numberMovies, 1)
         }
-    }
-
-    func testGetMoviesSave() throws {
-        showViewModel.saveLoadMovies(urlMovies: URLType.nowPlayingURL.rawValue)
-        XCTAssertEqual(showViewModel.movie?.count, 20)
-    }
-
-    func testGetMoviesLoad() throws {
-        showViewModel.loadSaveMovies(urlMovies: URLType.upComingURL.rawValue)
-        XCTAssertEqual(showViewModel.movie?.count, 20)
     }
 }
